@@ -15,7 +15,34 @@
     </form>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+const route = useRoute();
+const router = useRouter();
+import { useStore } from 'vuex';
+const store = useStore();
+
+const email = ref('');
+const message = ref('');
+const formIsValid = ref(true);
+
+const submitForm = () => {
+    formIsValid.value = true;
+    if (!email.value.includes('@') || email.value == '' || message.value == '') {
+        formIsValid.value = false;
+        return
+    };
+    const data = {
+        coachId: route.params.id,
+        email: email.value,
+        message: message.value
+    };
+    store.dispatch('requests/addRequestToCoach', data);
+    router.replace('/coaches');
+};
+</script>
+<!-- <script lang="ts">
 export default {
     data() {
         return {
@@ -41,4 +68,4 @@ export default {
         }
     }
 }
-</script>
+</script> -->

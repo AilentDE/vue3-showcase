@@ -7,7 +7,19 @@
     </section>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import CoachForm from '../../components/coaches/CoachForm.vue'
+import { useRouter } from 'vue-router';
+const router = useRouter();
+import { useStore } from 'vuex';
+const store = useStore();
+
+const saveData = (data:Object) => {
+    store.dispatch('coaches/addCoach', data);
+    router.replace('/coaches');
+};
+</script>
+<!-- <script lang="ts">
 import CoachForm from '../../components/coaches/CoachForm.vue'
 export default {
     components: {
@@ -20,4 +32,4 @@ export default {
         }
     }
 }
-</script>
+</script> -->

@@ -24,8 +24,81 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { ref, computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+const route = useRoute();
+const router = useRouter();
+import { useStore } from 'vuex';
+const store = useStore();
 
+const isLoading = ref(false);
+const errorMessage = ref('');
+const error = ref(null);
+const handleError = () => {
+  error.value = null
+};
+
+const email = ref('');
+const password = ref('');
+const formIsValid = ref(true);
+const submitForm = async () => {
+  formIsValid.value = true;
+  if (email.value === '' || !email.value.includes('@')) {
+    formIsValid.value = false;
+    errorMessage.value = 'wrong email address.';
+    return
+  } else if (password.value.length <6) {
+    formIsValid.value = false;
+    errorMessage.value = 'password must longer than 6 characters.';
+    return
+  };
+
+  isLoading.value = true;
+  try {
+    if (loginMode.value) {
+      await store.dispatch('login', {
+        email: email.value,
+        password: password.value
+      })
+    } else {
+      await store.dispatch('signup', {
+        email: email.value,
+        password: password.value
+      })
+    };
+    const redirectUrl = '/' + (route.query.redirect || 'coaches')
+    router.replace(redirectUrl);
+  } catch (getError:Error) {
+    error.value = getError.message || 'Failed to authenticate, try later.'
+  };
+
+  isLoading.value = false;
+};
+const clearValidity = () => {
+  formIsValid.value = true
+};
+const switchAuthMode = () => {
+  loginMode.value = !loginMode.value
+};
+
+const loginMode = ref(true);
+const loginButton = computed(() => {
+  if (loginMode.value) {
+    return 'Login'
+  } else {
+    return 'Signup'
+  }
+});
+const switchAuthButton = computed(() => {
+  if (!loginMode.value) {
+    return 'Login instead'
+  } else {
+    return 'Signup instead'
+  }
+});
+</script>
+<!-- <script lang="ts">
 export default {
   data() {
     return {
@@ -99,4 +172,4 @@ export default {
     }
   }
 }
-</script>
+</script> -->

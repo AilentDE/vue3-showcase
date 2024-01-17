@@ -10,7 +10,7 @@
             <base-card>
                 <header>
                     <h2>Interested? Reach out now!</h2>
-                    <base-button link :to="contactLink">Contact</base-button>
+                    <base-button v-show="showContactButton" link :to="contactLink">Contact</base-button>
                 </header>
                 <router-view></router-view>
             </base-card>
@@ -24,7 +24,46 @@
     </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { reactive, computed, defineProps } from 'vue';
+import { useRoute } from 'vue-router';
+const route = useRoute();
+import { useStore } from 'vuex';
+const store = useStore();
+
+const props = defineProps(['id']);
+
+let selectedCoach = reactive({
+    firstName: '',
+    lastName: '',
+    hourlyRate: null,
+    areas: [],
+    description: ''
+});
+const selectedCoachFunc = () => {
+    selectedCoach = reactive(store.getters['coaches/listCoaches'].find(coach => coach.id === props.id))
+};
+selectedCoachFunc()
+const fullName = computed(() =>
+    selectedCoach.firstName + ' ' + selectedCoach.lastName
+);
+const rate = computed(() => 
+    selectedCoach.hourlyRate
+);
+const contactLink = computed(() => 
+    route.path + '/contact'
+);
+const showContactButton = computed(() =>
+    !route.path.includes('/contact')
+);
+const areas = computed(() => 
+    selectedCoach.areas
+);
+const description = computed(() =>
+    selectedCoach.description
+);
+</script>
+<!-- <script lang="ts">
 
 export default {
     props: ['id'],
@@ -56,4 +95,4 @@ export default {
         )
     }
 }
-</script>
+</script> -->

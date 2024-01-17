@@ -38,7 +38,65 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import CoachIteam from '../../components/coaches/CoachItem.vue'
+import CoachFilter from '../../components/coaches/CoachFilter.vue'
+import { ref, reactive, computed } from 'vue';
+import { useStore } from 'vuex';
+const store = useStore();
+
+const isLoading = ref(false);
+const error = ref(null);
+const handleError = () => {
+  error.value = null
+};
+
+const loadCoaches =async (refresh:Boolean = false) => {
+  isLoading.value = true;
+  try {
+    await store.dispatch('coaches/loadCoaches', {forceRefresh: refresh})
+  } catch (getError) {
+    error.value = getError.message || 'Something went wrong!'
+  };
+  isLoading.value = false;
+}
+loadCoaches();
+
+let activeFilters = reactive({
+  frontend: true,
+  backend: true,
+  career: true
+})
+const filteredCoaches = computed(() => {
+  const coaches = store.getters['coaches/listCoaches'];
+  return coaches.filter(coach => {
+    if (activeFilters.frontend && coach.areas.includes('frontend')) {
+      return true
+    };
+    if (activeFilters.backend && coach.areas.includes('backend')) {
+      return true
+    };
+    if (activeFilters.career && coach.areas.includes('career')) {
+      return true
+    };
+    return false
+  })
+});
+const setFilters = (updatedFilters) => {
+  activeFilters = reactive(updatedFilters);
+}
+
+const isLoggedIn = computed(() => {
+  return store.getters.isAuthenticated
+});
+const hasCoaches = computed(() => {
+  return !isLoading.value && store.getters['coaches/hasCoaches']
+});
+const isCoach = computed(() => {
+  return store.getters['coaches/isCoach']
+});
+</script>
+<!-- <script lang="ts">
 import CoachIteam from '../../components/coaches/CoachItem.vue'
 import CoachFilter from '../../components/coaches/CoachFilter.vue'
 import type Coach from '../../types/coach'
@@ -105,4 +163,4 @@ export default {
     }
   }
 }
-</script>
+</script> -->

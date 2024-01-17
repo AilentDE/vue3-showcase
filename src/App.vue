@@ -7,7 +7,14 @@
   </router-view>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import TheHeader from './components/layout/TheHeader.vue'
+import { useStore } from 'vuex'; 
+
+const store = useStore();
+store.dispatch('tryLogin');
+</script>
+<!-- <script lang="ts">
 // import { RouterLink, RouterView } from 'vue-router'
 // import HelloWorld from './components/HelloWorld.vue'
 import TheHeader from './components/layout/TheHeader.vue'
@@ -20,7 +27,7 @@ export default {
     this.$store.dispatch('tryLogin')
   }
 }
-</script>
+</script> -->
 
 <style scoped>
 header {
